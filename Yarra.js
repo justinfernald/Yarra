@@ -5,11 +5,11 @@ class Yarra extends Array {
         return out;
     }
 
-    static entries = (x) => {
+    static entries(x) {
         return new Yarra(Object.entries(x));
     };
 
-    static range = ({ start = 0, end, step = 1, inclusive = false }) => {
+    static range({ start = 0, end, step = 1, inclusive = false }) {
         // inclusive is for ending
         let steps = (end - start) / step;
         let n =
@@ -20,13 +20,13 @@ class Yarra extends Array {
         return arr;
     };
 
-    static rangeMap = ({
+    static rangeMap({
         start = 0,
         end,
         step = 1,
         inclusive = false,
         f = (x) => x,
-    }) => {
+    }) {
         // inclusive is for ending
         let steps = (end - start) / step;
         let n =
@@ -37,7 +37,7 @@ class Yarra extends Array {
         return arr;
     };
 
-    static linSpace = (start = 0, end = 1, n = 2) => {
+    static linSpace(start = 0, end = 1, n = 2) {
         if (!Number.isInteger(n)) throw Error("n not an integer");
         if (n <= 1) throw Error("n must be greater than 1");
         return this.range({
@@ -48,7 +48,7 @@ class Yarra extends Array {
         });
     };
 
-    static linSpaceMap = (start = 0, end = 1, n = 2, f) => {
+    static linSpaceMap(start = 0, end = 1, n = 2, f) {
         if (!Number.isInteger(n)) throw Error("n not an integer");
         if (n <= 0) throw Error("n must be positive");
         return this.rangeMap({
@@ -67,7 +67,7 @@ class Yarra extends Array {
         // passing multiple arguments will create array with arguments
         // to be safe you can always pass with just array to have consistently
         if (args.length === 1) {
-            if (Array.isArray(args[0])) {
+            if (args[0] instanceof Array) {
                 if (args[0].length === 1) {
                     super(1);
                     this[0] = args[0][0];
@@ -81,14 +81,20 @@ class Yarra extends Array {
         } else {
             super(...args);
         }
+
         return new Proxy(this, {
             get: (target, name) => {
                 if (target[name] !== undefined) return target[name];
-                let num = +name;
-                if (Number.isInteger(num) && num < 0)
-                    return target[target.length + num];
+
+                if (!isNaN(name)) {
+                    let num = +name;
+                    if (Number.isInteger(num) && num < 0)
+                        return target[target.length + num];
+                }
+
                 return target[name];
             },
+            // set: (target, name) => { }
         });
     }
 
@@ -101,7 +107,7 @@ class Yarra extends Array {
     }
 
     get full() {
-        return [...this.entries()].map(([i, x]) => [x, i]); // matches typical value then index in map, filter, and reduce
+        return new Yarra([...this.entries()].map(([i, x]) => [x, i])); // matches typical value then index in map, filter, and reduce
     }
 
     get size() {
@@ -114,8 +120,8 @@ class Yarra extends Array {
     get dimensions() {
         // this does not test for consistency in dimensions and only by measure of first index
         // doesn't return Yarra since data it simple
-        if (Array.isArray(this[0])) {
-            let subDim = new Yarra(this[0]).dimensions();
+        if (this[0] instanceof Array) {
+            let subDim = new Yarra(this[0]).dimensions;
             return subDim ? [this.length, ...subDim] : [this.length];
         } else return [this.length];
     }
@@ -195,16 +201,93 @@ class Yarra extends Array {
         return !this.some(f);
     }
 
-    reject(f) {
-        return this.filter((...args) => !f(...args));
+    mutate(newValue) {
+        this.length = newValue.length;
+        for (let [x, i] of newValue.full)
+            this[i] = x;
+        return newValue;
     }
 
-    rejectFull(f) {
-        return this.full.filter(([x, i]) => !f(x, i, this));
+    get(...indices) { // alias to typical indexing with multidimensional indexing
+        let output = this;
+        for (let i of indices)
+            output = output[i]
+
+        return output;
     }
 
-    filterFull(f) {
-        return this.full.filter(([x, i]) => f(x, i, this));
+    at(...indices) {
+        if (indices[0] instanceof Array)
+            indices = indices[0];
+        return this.filter((_, i) => indices.includes(i));
+    }
+
+    pullAt(...indices) {
+        if (indices.length === 0) return this.clone();
+        if (indices[0] instanceof Array)
+            indices = indices[0];
+        let [accepted, rejected] = this.split((_, i) => indices.includes(i));
+        this.mutate(rejected);
+        return accepted;
+    }
+
+    mapMutate(f, thisArg) {
+        return this.mutate(this.map(f, thisArg));
+    }
+
+    filterMutate(f, thisArg) {
+        return this.mutate(this.filter(f, thisArg));
+    }
+
+    rejectMutate(f, thisArg) {
+        return this.mutate(this.reject(f, thisArg));
+    }
+
+    reject(f, thisArg) {
+        return this.filter((...args) => !f(...args), thisArg);
+    }
+
+    rejectFull(f, thisArg) {
+        return this.full.filter(([x, i]) => !f(x, i, this), thisArg);
+    }
+
+    filterFull(f, thisArg) {
+        return this.full.filter(([x, i]) => f(x, i, this), thisArg);
+    }
+
+    split(f) {
+        let accepted = new Yarra();
+        let rejected = new Yarra();
+        this.forEach((x, i, arr) => {
+            if (f(x, i, arr))
+                accepted.push(x);
+            else
+                rejected.push(x);
+        })
+
+        return new Yarra(accepted, rejected);
+    }
+
+    splitFull(f) {
+        let accepted = new Yarra();
+        let rejected = new Yarra();
+        this.forEach((x, i, arr) => {
+            if (f(x, i, arr))
+                accepted.push([x, i]);
+            else
+                rejected.push([x, i]);
+        })
+
+        return new Yarra(accepted, rejected)
+    }
+
+    splitAt(...indices) {
+        if (indices.length === 0) return this.clone();
+        if (indices[0] instanceof Array)
+            indices = indices[0];
+        if (indices.length === 1)
+            return new Yarra(this.slice(0, indices[0]), this.slice(indices[0]));
+        return new Yarra([this.slice(0, indices[0]), ...this.splitAt(indices.slice(1))])
     }
 
     findFull(f) {
@@ -223,6 +306,14 @@ class Yarra extends Array {
     findLastFull(f) {
         for (let i = this.length - 1; i >= 0; i--)
             if (f(this[i])) return [x, i];
+    }
+
+    findAllIndex(f) {
+        return this.filterFull(f).map(([_, i]) => i);
+    }
+
+    allIndexOf(v, loose = false) {
+        return loose ? this.filterFull((x) => x == v).map(([_, i]) => i) : this.filterFull((x) => x === v).map(([_, i]) => i);
     }
 
     flattenDeep() {
@@ -251,7 +342,48 @@ class Yarra extends Array {
         // shallow clone / nearly everything is a clone but this is clear
         return this.slice();
     }
+
+    concat(...args) { // overwrote concat due to speed
+        let output = new Yarra(this);
+        for (let arg of args)
+            if (arg instanceof Array)
+                output.push(...arg)
+            else
+                output.push(arg)
+
+        return output
+    }
+
+    concatMutate(...args) { // mutates
+        for (let arg of args)
+            if (arg instanceof Array)
+                this.push(...arg)
+            else
+                this.push(arg)
+
+        return this;
+    }
+
+    insertItem(x, i = 0) {
+        return new Yarra(...this.slice(0, i), x, ...this.slice(i));
+    }
+
+    insertList(list, i = 0) {
+        return new Yarra(...this.slice(0, i), ...list, ...this.slice(i));
+    }
+
+    insertItemMutate(x, i = 0) { // mutates
+        this.splice(i, 0, x);
+        return this;
+    };
+
+    insertListMutate(list, i = 0) { // mutates
+        this.splice(i, 0, ...list);
+        return this;
+    };
 }
+
+// Yarra.prototype[Symbol.isConcatSpreadable] = true; / if using native concat
 
 Yarra.prototype.toGenerator = function* () {
     for (let x of this) yield x;

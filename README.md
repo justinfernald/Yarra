@@ -4,13 +4,11 @@ JavaScript Arrays but beefed
 
 ## Overview
 
-Yarra is currently in testing as to what features are to be added and what limitations will come of it.
+The goal of Yarra is to add common array operations to arrays objects that do not already exists. Yarra is not about speed, but to not completely ignore speed.
 
-The goal of Yarra is to add common array operations to arrays objects that do not already exists.
+It is possible to add onto the prototype of Array in JavaScript, but that is very bad practice for many reasons, so the recommendation is to stay very clear of that. So Yarra extends off of Array.
 
-It is possible to add onto the prototype of Array in JavaScript, but that is very bad practice for many reasons, so the recommendation is to stay very clear of that. So what Yarra does is steals all the native array methods by "extending" from Array (not really).
-
-The syntax of using Yarra attempts to keep as much similarity as possible.
+The syntax of using Yarra attempts to keep as much similarity as possible. Yarra pulls inspiration from the array methods from Lodash.
 
 ---
 
@@ -47,9 +45,10 @@ Question to figure out: Is it possible to log our a Yarra object and have it cus
 ## Current Objectives
 
 -   Feature creation
+    -   Determine indexing method
 -   Better performance
 -   Adding Tests
 -   Conversion to TypeScript
 -   Creation of Node module
 
-The main object currently is just the feature creation as right now this is just a test.
+The main object currently is just the feature creation as right now.
