@@ -86,7 +86,7 @@ The syntax of using Yarra attempts to keep as much similarity as possible. Yarra
     * `toArray()`: converts to native Array
 ### Planned
 * Static functions
-    * #toIndices(input): convert string to future indexing format
+    * `#toIndices(input)`: convert string to future indexing format
 * Getters
     * Take indexing format and return corresponding values
 * Setters
