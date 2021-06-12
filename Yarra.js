@@ -188,6 +188,15 @@ class Yarra extends Array {
         return this.reduce((s, x) => s + (f(x) ? 1 : 0), 0);
     }
 
+    occurrences(f = (a) => a) {
+        let output = {};
+        for (let x of this.map(f)) {
+            if (output[x]) output[x]++;
+            else output[x] = 1;
+        }
+        return output;
+    }
+
     sample() {
         return this[Math.floor(Math.random() * this.length)];
     }

@@ -38,6 +38,7 @@ The syntax of using Yarra attempts to keep as much similarity as possible. Yarra
     -   `isUnique((loose = false))`: Check if content is unique values
     -   `isUniqueWith(f)`: Check if content is unique values with custom comparator
     -   `count((f = Boolean))`: Get count of occurrences of truth results from function
+    -   `occurrences(f = (a) => a)`: Returns object of occurrence count with f mapping
     -   `sample()`: Get a single random value from content
     -   `chunk(n)`: Generate array in chunks of size n
     -   `uncover((n = 1))`: Alias to flatten
