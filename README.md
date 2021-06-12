@@ -127,8 +127,6 @@ for (let x of Y(1, 2, 3)); // works with iterator
 
 ---
 
-Question to figure out: Is it possible to log our a Yarra object and have it custom print out a value.
-
 ## Extra Objectives
 
 -   Better performance
