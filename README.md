@@ -93,6 +93,12 @@ The syntax of using Yarra attempts to keep as much similarity as possible. Yarra
     -   `#toIndices(input)`: convert string to future indexing format
 -   Getters
     -   Take indexing format and return corresponding values
+    -   Change to `dimensions` such that it doesn't just check first element for dimensions (possible options of max, min, first, consistent)
+        -   max will return max length for each dimension
+        -   min will return min length for each dimension
+        -   first(current) will return min length for each dimension
+        -   consistent will return dimension and enforce they are all the same size and if not throw an error
+        -   this will require making this a function instead of getter
 -   Setters
     -   Take indexing format allow setting values to each (replace all with scalar value and replace each with array value)
 -   Functions
@@ -100,6 +106,7 @@ The syntax of using Yarra attempts to keep as much similarity as possible. Yarra
     -   `takeWhileRight(f)`: takeWhile from right to left
     -   `dropWhile(f)`: returns Yarra of rest of content once f returns false (starting from left to right)
     -   `dropWhileRight(f)`: dropWhile from right to left
+    -   Enforce dimension consistency to elementWise functions
 
 ---
 
