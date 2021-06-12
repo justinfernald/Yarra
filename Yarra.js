@@ -211,7 +211,15 @@ class Yarra extends Array {
         return this.map((x) => new Yarra([x])).cover(n - 1);
     }
 
-    elementWise(arr, f) {
+    elementWise(arr, f, singleDimension = false) {
+        if (singleDimension) {
+            if (this.length !== arr.length) throw Error("Unequal lengths");
+
+            let output = Yarra.allocate(this.length);
+            for (let i in this) output[i] = f(this[i], arr[i], i);
+            return output;
+        }
+
         if (!this.dimensions.equals(arr.dimensions))
             throw Error("Unequal dimensions");
 
