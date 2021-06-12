@@ -2,18 +2,21 @@ class Yarra extends Array {
     static #toIndices(input) {
         // todo - for indexing in get/set for proxy
         // using : will range
-        // "1:3" -> 1,2
-        // adding space will add
-        // "1:3 6:8" -> 1,2,6,7,8
+        // ":3" -> [[0],[1],[2]]
+        // ":" -> everything
+        // "3:" -> from 3 to end
+        // "1:3" -> [[1],[2]]
+        // adding space or , will add
+        // "1:3 6:8" -> [[1],[2],[6],[7],[8]]
         // using negative will index backwards
-        // "-3:-1" -> 3,4 (ex. length = 6)
+        // "-3:-1" -> [[3],[4]] (ex. length = 6)
         // using # will range with end inclusive
-        // "1#3" -> 1,2,3
+        // "1#3" -> [[1],[2],[3]]
         // using > will range with end being start + next value
-        // "2>2" -> 2,3
+        // "2>2" -> [[2],[3]]
         // using ; will go to next dimension
         // "0:3 ; 2#4" -> take first 3 rows and take 3rd to 5th column
-        // -> [0,2],[0,3],[0,4],[1,2],[1,3],[1,4],[2,2],[2,3],[2,4]
+        // -> [[[0,2],[0,3],[0,4]],[[1,2],[1,3],[1,4]],[[2,2],[2,3],[2,4]]]
         // unsure if this is how the output will look
     }
 
@@ -343,6 +346,26 @@ class Yarra extends Array {
         };
     }
 
+    retrieve(template) {
+        // template of array return format with tuple for accessing
+        template = new Yarra(template); // enforce it is yarra
+        // Y([1,2],[3,4])
+        // [[()],(1)] -> [[[1,2],[3,4]],[3,4]]
+        // [[2,1], [6], [7], [8]];
+        let output = [];
+        let curr = this.clone();
+        for (let [x, i] of template.full) {
+            if (!(x instanceof Array)) throw Error("Invalid template");
+            if (x.length === 0 || typeof x[0] === "number") {
+                output[i] = curr.get(...x);
+            } else {
+                output[i] = curr.retrieve(x);
+            }
+        }
+
+        return output;
+    }
+
     at(...indices) {
         if (indices[0] instanceof Array) indices = indices[0];
         return this.filter((_, i) => indices.includes(i));
@@ -535,3 +558,8 @@ Object.defineProperty(Yarra.prototype, "toCycleGenerator", {
 });
 
 const Y = (...args) => new Yarra(...args); // shortcut for simplicity
+
+let test = Y(2, 3, 4, 5, 6);
+console.log(test);
+// console.log(test.get());
+console.log(test.retrieve([[1], [2]]));
