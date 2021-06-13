@@ -1,5 +1,5 @@
 class Yarra extends Array {
-    static #toIndices(input) {
+    static toIndices(input) {
         // todo - for indexing in get/set for proxy
         // using : will range
         // ":3" -> [[0],[1],[2]]
@@ -18,11 +18,94 @@ class Yarra extends Array {
         // "0:3 ; 2#4" -> take first 3 rows and take 3rd to 5th column
         // -> [[[0,2],[0,3],[0,4]],[[1,2],[1,3],[1,4]],[[2,2],[2,3],[2,4]]]
         // unsure if this is how the output will look
+
+        const operators = ":#>,;";
+        const spacingOperators = {
+            ":": (start, end) => Yarra.range({ start, end }),
+            "#": (start, end) => Yarra.range({ start, end, inclusive: true }),
+            ">": (start, n) => Yarra.range({ start, end: start + n }),
+        };
+        for (let x of operators) {
+            input = input
+                .split(x)
+                .map((x) => x.trim())
+                .join(x);
+        }
+
+        let dimensions = new Yarra(input.split(";"));
+        let dimensionsIndices = Yarra.allocate(dimensions.length);
+
+        for (let [dimension, i] of dimensions.full) {
+            let dimensionIndices = [];
+
+            for (let part of dimension.split(/[ ,]/)) {
+                if (!isNaN(part)) {
+                    dimensionIndices.push(+part);
+                    continue;
+                }
+                for (let op in spacingOperators) {
+                    if (!part.includes(op)) continue;
+                    let [a, b] = part.split(op).map((x) => +x);
+                    dimensionIndices.push(...spacingOperators[op](a, b));
+                }
+            }
+            dimensionsIndices[i] = dimensionIndices;
+        }
+
+        let output = Yarra.#generateTemplate(dimensionsIndices);
+
+        return output;
     }
 
-    static allocate(n) {
+    static #generateTemplate(input) {
+        // Created by Will Garrett
+        if (input.length === 0) return new Yarra();
+
+        let output = Yarra.allocate(input.map((x) => x.length));
+
+        let loopN = 1;
+        input.forEach((x) => (loopN *= x.length));
+
+        let offsets = Yarra.allocate(input.length).fill(0);
+
+        for (let i = 0; i < loopN; i++) {
+            output.set(offsets)(offsets.map((x, j) => [...input[j]][x]));
+
+            for (let j = offsets.length - 1; j >= 0; j--) {
+                offsets[j]++;
+                if (offsets[j] < input[j].length) break;
+                else offsets[j] = 0;
+            }
+        }
+
+        return output;
+    }
+
+    static allocate(...n) {
+        // Modified by Will Garrett
+        if (n[0] instanceof Array) n = n[0];
+
         let out = new Yarra();
-        out.length = n;
+        out.length = n[0];
+
+        let loopN = n[0];
+
+        for (let i = 1; i < n.length; i++) {
+            let index = Yarra.allocate(i);
+            index.fill(0);
+
+            for (let j = 0; j < loopN; j++) {
+                out.set(index)(Yarra.allocate(n[i]));
+
+                for (let k = i - 1; k >= 0; k--) {
+                    index[k]++;
+                    if (index[k] < n[k]) break;
+                    else index[k] = 0;
+                }
+            }
+
+            loopN *= n[i];
+        }
         return out;
     }
 
@@ -337,6 +420,8 @@ class Yarra extends Array {
     }
 
     set(...indices) {
+        // Modified by Will Garrett
+        if (indices[0] instanceof Array) indices = indices[0];
         // uses currying
         return (x) => {
             let output = this;
@@ -352,15 +437,12 @@ class Yarra extends Array {
         // Y([1,2],[3,4])
         // [[()],(1)] -> [[[1,2],[3,4]],[3,4]]
         // [[2,1], [6], [7], [8]];
-        let output = [];
+        let output = new Yarra();
         let curr = this.clone();
         for (let [x, i] of template.full) {
             if (!(x instanceof Array)) throw Error("Invalid template");
-            if (x.length === 0 || typeof x[0] === "number") {
-                output[i] = curr.get(...x);
-            } else {
-                output[i] = curr.retrieve(x);
-            }
+            if (x[0] instanceof Array) output[i] = curr.retrieve(x);
+            else output[i] = curr.get(...x);
         }
 
         return output;
@@ -558,8 +640,3 @@ Object.defineProperty(Yarra.prototype, "toCycleGenerator", {
 });
 
 const Y = (...args) => new Yarra(...args); // shortcut for simplicity
-
-let test = Y(2, 3, 4, 5, 6);
-console.log(test);
-// console.log(test.get());
-console.log(test.retrieve([[1], [2]]));
