@@ -1,6 +1,5 @@
 class Yarra extends Array {
     static toIndices(input) {
-        // todo - for indexing in get/set for proxy
         // using : will range
         // ":3" -> [[0],[1],[2]]
         // ":" -> everything
@@ -20,6 +19,13 @@ class Yarra extends Array {
         // unsure if this is how the output will look
 
         const operators = ":#>,;";
+        const acceptable = "0123456789 " + operators;
+        if (
+            input.trim().length === 0 ||
+            ![...input.trim()].every((c) => acceptable.includes(c))
+        ) {
+            return;
+        }
         const spacingOperators = {
             ":": (start, end) => Yarra.range({ start, end }),
             "#": (start, end) => Yarra.range({ start, end, inclusive: true }),
@@ -52,12 +58,12 @@ class Yarra extends Array {
             dimensionsIndices[i] = dimensionIndices;
         }
 
-        let output = Yarra.#generateTemplate(dimensionsIndices);
+        let output = Yarra.generateTemplate(dimensionsIndices);
 
         return output;
     }
 
-    static #generateTemplate(input) {
+    static generateTemplate(input) {
         // Created by Will Garrett
         if (input.length === 0) return new Yarra();
 
@@ -192,9 +198,37 @@ class Yarra extends Array {
                         return target[target.length + num];
                 }
 
+                let indices = Yarra.toIndices(name);
+                if (indices) return target.getFrom(indices);
+
                 return target[name];
             },
-            // set: (target, name) => { }
+            set: (target, name, value) => {
+                if (!isNaN(name)) {
+                    let num = +name;
+                    if (Number.isInteger(num)) {
+                        if (num >= 0) {
+                            target[num] = value;
+                        } else {
+                            target[target.length + num] = value;
+                        }
+                        return true;
+                    }
+                }
+
+                let indices = Yarra.toIndices(name);
+                if (indices) {
+                    if (Array.isArray(value)) {
+                        target.setFrom(indices, value);
+                    } else {
+                        target.setAllFrom(indices, value);
+                    }
+                    return true;
+                }
+
+                target[name] = value;
+                return true;
+            },
         });
     }
 
@@ -431,21 +465,48 @@ class Yarra extends Array {
         };
     }
 
-    retrieve(template) {
-        // template of array return format with tuple for accessing
-        template = new Yarra(template); // enforce it is yarra
-        // Y([1,2],[3,4])
-        // [[()],(1)] -> [[[1,2],[3,4]],[3,4]]
-        // [[2,1], [6], [7], [8]];
+    getFrom(template) {
+        template = new Yarra(template);
+
         let output = new Yarra();
         let curr = this.clone();
         for (let [x, i] of template.full) {
             if (!(x instanceof Array)) throw Error("Invalid template");
-            if (x[0] instanceof Array) output[i] = curr.retrieve(x);
+            if (x[0] instanceof Array) output[i] = curr.getFrom(x);
             else output[i] = curr.get(...x);
         }
 
         return output;
+    }
+
+    setAllFrom(template, value) {
+        template = new Yarra(template);
+        let curr = this;
+        for (let x of template) {
+            if (!(x instanceof Array)) throw Error("Invalid template");
+            if (x[0] instanceof Array) curr.setAllFrom(x, value);
+            else curr.set(...x)(value);
+        }
+
+        return this;
+    }
+
+    setFrom(template, values) {
+        const setFromRunner = (arr, template, values, location) => {
+            template = new Yarra(template);
+            values = new Yarra(values);
+
+            let curr = arr;
+            for (let [x, i] of template.full) {
+                if (!(x instanceof Array)) throw Error("Invalid template");
+                if (x[0] instanceof Array)
+                    setFromRunner(curr, x, values, [...location, i]);
+                else curr.set(...x)(values.get(...location, i));
+            }
+            return this;
+        };
+
+        return setFromRunner(this, template, values, []);
     }
 
     at(...indices) {
