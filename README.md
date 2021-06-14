@@ -31,6 +31,10 @@ The syntax of using Yarra attempts to keep as much similarity as possible. Yarra
     -   `full`: Get entries
     -   `size`: Get filled values count
     -   `dimensions`: Get Yarra of dimensions
+    -   Custom indexing
+-   Setters
+    -   Negative indexing
+    -   Custom indexing
 -   Functions
     -   `written(oxfordComma = true)`: Get in string format following English grammar
     -   `unique((loose = false))`: Get content with unique values only
