@@ -41,8 +41,8 @@ class Yarra extends Array {
         }
 
         let dimensions = new Yarra(input.split(";"));
-        let dimensionsIndices = Yarra.allocate(dimensions.length);
 
+        let dimensionsIndices = Yarra.allocate(dimensions.length);
         for (let [dimension, i] of dimensions.full) {
             let dimensionIndices = [];
 
@@ -59,13 +59,12 @@ class Yarra extends Array {
                         .map((x) => +x);
                     let [a, b, c] = inputs;
                     if (inputs.length === 0) {
-                        if (op === ":")
+                        if (op === ":") {
                             dimensionIndices.push(
                                 ...spacingOperators[op](0, shape[i])
                             );
-                        else return;
-                    }
-                    if (inputs.length === 1) {
+                        } else return;
+                    } else if (inputs.length === 1) {
                         if (part.startsWith(op)) {
                             dimensionIndices.push(
                                 ...spacingOperators[op](0, a)
@@ -86,7 +85,6 @@ class Yarra extends Array {
             }
             dimensionsIndices[i] = dimensionIndices;
         }
-
         let output = Yarra.generateTemplate(dimensionsIndices);
 
         return output;
@@ -731,8 +729,3 @@ Object.defineProperty(Yarra.prototype, "toCycleGenerator", {
 });
 
 const Y = (...args) => new Yarra(...args); // shortcut for simplicity
-
-let test = Y(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
-console.log(test["2>3"]);
-
-// console.dir(Yarra.toIndices("3:2:8 ; 1 3 5 ; 3 1"), { depth: null });
