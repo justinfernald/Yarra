@@ -27,10 +27,11 @@ class Yarra extends Array {
             return;
 
         const spacingOperators = {
-            ":": (start, end, step) => Yarra.range({ start, end, step }),
-            "#": (start, end, step) =>
+            ":": (start: number, end: number, step?: number) =>
+                Yarra.range({ start, end, step }),
+            "#": (start: number, end: number, step?: number) =>
                 Yarra.range({ start, end, step, inclusive: true }),
-            ">": (start, n, step) =>
+            ">": (start: number, n: number, step?: number) =>
                 Yarra.range({ start, end: start + n, step }),
         };
         for (let x of operators) {
@@ -146,7 +147,17 @@ class Yarra extends Array {
         return new Yarra(Object.entries(x));
     }
 
-    static range({ start = 0, end, step = 1, inclusive = false }) {
+    static range({
+        start = 0,
+        end,
+        step = 1,
+        inclusive = false,
+    }: {
+        start?: number;
+        end: number;
+        step?: number;
+        inclusive?: boolean;
+    }) {
         // inclusive is for ending
         let steps = (end - start) / step;
         let n =
@@ -217,9 +228,10 @@ class Yarra extends Array {
 
         return new Proxy(this, {
             get: (target, name) => {
+                if (typeof name === "symbol") return target[name];
                 if (target[name] !== undefined) return target[name];
 
-                if (!isNaN(name)) {
+                if (!isNaN(+name)) {
                     let num = +name;
                     if (Number.isInteger(num) && num < 0)
                         return target[target.length + num];
@@ -231,7 +243,12 @@ class Yarra extends Array {
                 return target[name];
             },
             set: (target, name, value) => {
-                if (!isNaN(name)) {
+                if (typeof name === "symbol") {
+                    target[name] = value;
+                    return true;
+                }
+
+                if (!isNaN(+name)) {
                     let num = +name;
                     if (Number.isInteger(num)) {
                         if (num >= 0) {
@@ -364,7 +381,7 @@ class Yarra extends Array {
 
     cover(n = 1) {
         if (n < 1) return this.clone();
-        return this.map((x) => new Yarra([x])).cover(n - 1);
+        return (this.map((x) => new Yarra([x])) as Yarra).cover(n - 1);
     }
 
     elementWise(arr, f, singleDimension = false) {
@@ -407,7 +424,7 @@ class Yarra extends Array {
             this.dimensions[1] !== arr.dimensions[0]
         )
             throw Error("Dimensions don't work");
-        let lhs = this;
+        let lhs: this | Yarra = this;
         let rhs = arr;
 
         if (this.dimensions.length === 1) lhs = new Yarra(this);
@@ -550,27 +567,27 @@ class Yarra extends Array {
         return accepted;
     }
 
-    mapMutate(f, thisArg) {
+    mapMutate(f, thisArg?: any) {
         return this.mutate(this.map(f, thisArg));
     }
 
-    filterMutate(f, thisArg) {
+    filterMutate(f, thisArg?: any) {
         return this.mutate(this.filter(f, thisArg));
     }
 
-    rejectMutate(f, thisArg) {
+    rejectMutate(f, thisArg?: any) {
         return this.mutate(this.reject(f, thisArg));
     }
 
-    reject(f, thisArg) {
+    reject(f, thisArg?: any) {
         return this.filter((...args) => !f(...args), thisArg);
     }
 
-    rejectFull(f, thisArg) {
+    rejectFull(f, thisArg?: any) {
         return this.full.filter(([x, i]) => !f(x, i, this), thisArg);
     }
 
-    filterFull(f, thisArg) {
+    filterFull(f, thisArg?: any) {
         return this.full.filter(([x, i]) => f(x, i, this), thisArg);
     }
 
@@ -608,7 +625,8 @@ class Yarra extends Array {
     }
 
     findFull(f) {
-        for (let i = 0; i < this.length; i++) if (f(this[i])) return [x, i];
+        for (let i = 0; i < this.length; i++)
+            if (f(this[i])) return [this[i], i];
     }
 
     findLast(f) {
@@ -622,7 +640,7 @@ class Yarra extends Array {
 
     findLastFull(f) {
         for (let i = this.length - 1; i >= 0; i--)
-            if (f(this[i])) return [x, i];
+            if (f(this[i])) return [this[i], i];
     }
 
     findAllIndex(f) {
@@ -662,9 +680,9 @@ class Yarra extends Array {
         return this.every((x, i) => f(x, rhs[i], i));
     }
 
-    clone() {
+    clone(): Yarra {
         // shallow clone / nearly everything is a clone but this is clear
-        return this.slice();
+        return this.slice() as Yarra;
     }
 
     concat(...args) {
@@ -710,6 +728,9 @@ class Yarra extends Array {
         // I get it. It's fine. I understand. You gotta do what you gotta do.
         return [...this];
     }
+
+    toGenerator: () => Generator<any, void, unknown>;
+    toCycleGenerator: () => Generator<any, never, unknown>;
 }
 
 Yarra.prototype.toGenerator = function* () {
@@ -729,3 +750,8 @@ Object.defineProperty(Yarra.prototype, "toCycleGenerator", {
 });
 
 const Y = (...args) => new Yarra(...args); // shortcut for simplicity
+
+let test = Y(1, 2, 3, 4, 5, 6);
+for (let i in test) {
+    console.log(i);
+}
