@@ -1,0 +1,11 @@
+{
+    "plugins": ["jsdoc-plugin-typescript"],
+    "typescript": {
+        "moduleRoot": "src"
+    },
+    "source": {
+        "include": ["."],
+        "includePattern": ".(jsx|js|ts|tsx)$"
+    },
+    "sourceType": "module"
+}
