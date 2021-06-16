@@ -1,29 +1,26 @@
 export class Yarra<Type> extends Array<Type> {
     /**
+     * using : will range
+     * ":3" -> [[0],[1],[2]]
+     * ":" -> everything
+     * "3:" -> from 3 to end
+     * "1:3" -> [[1],[2]]
+     * adding space or , will add
+     * "1:3 6:8" -> [[1],[2],[6],[7],[8]]
+     * using negative will index backwards
+     * "-3:-1" -> [[3],[4]] (ex. length = 6)
+     * using # will range with end inclusive
+     * "1#3" -> [[1],[2],[3]]
+     * using > will range with end being start + next value
+     * "2>2" -> [[2],[3]]
+     * using ; will go to next dimension
+     * "0:3 ; 2#4" -> take first 3 rows and take 3rd to 5th column
      *
      * @param input input indexing template
      * @param shape shape of array
      * @returns template of indices
      */
     static toIndices(input: string, shape: number[]) {
-        // using : will range
-        // ":3" -> [[0],[1],[2]]
-        // ":" -> everything
-        // "3:" -> from 3 to end
-        // "1:3" -> [[1],[2]]
-        // adding space or , will add
-        // "1:3 6:8" -> [[1],[2],[6],[7],[8]]
-        // using negative will index backwards
-        // "-3:-1" -> [[3],[4]] (ex. length = 6)
-        // using # will range with end inclusive
-        // "1#3" -> [[1],[2],[3]]
-        // using > will range with end being start + next value
-        // "2>2" -> [[2],[3]]
-        // using ; will go to next dimension
-        // "0:3 ; 2#4" -> take first 3 rows and take 3rd to 5th column
-        // -> [[[0,2],[0,3],[0,4]],[[1,2],[1,3],[1,4]],[[2,2],[2,3],[2,4]]]
-        // unsure if this is how the output will look
-
         const operators = ":#>,;";
         const acceptable = "0123456789 " + operators;
         if (
@@ -40,6 +37,7 @@ export class Yarra<Type> extends Array<Type> {
             ">": (start: number, n: number, step?: number): Yarra<number> =>
                 Yarra.range({ start, end: start + n, step }),
         };
+
         for (let x of operators) {
             input = input
                 .split(x)
@@ -97,6 +95,11 @@ export class Yarra<Type> extends Array<Type> {
         return output;
     }
 
+    /**
+     * Generates indexing template
+     * @param input Indices of each dimension
+     * @returns Full template of N Cube based on input
+     */
     static generateTemplate(input: number[][]) {
         // Created by Will Garrett
         if (input.length === 0) return new Yarra();
@@ -121,6 +124,10 @@ export class Yarra<Type> extends Array<Type> {
         return output;
     }
 
+    /**
+     * Create new Yarra with n shape spaces preallocated
+     * @param n Shape of Yarra to allocate
+     */
     static allocate(n: number[]): Yarra<any>;
     static allocate(...n: number[]): Yarra<any>;
     static allocate(...n: any) {
@@ -151,10 +158,20 @@ export class Yarra<Type> extends Array<Type> {
         return out;
     }
 
+    /**
+     * Get entries of object as Yarra
+     * @param x Object to convert
+     * @returns Yarra version of Object
+     */
     static entries(x: Object) {
         return new Yarra(Object.entries(x));
     }
 
+    /**
+     * Creates range values as Yarra
+     * @param Options for range
+     * @returns
+     */
     static range({
         start = 0,
         end,
@@ -176,6 +193,11 @@ export class Yarra<Type> extends Array<Type> {
         return arr;
     }
 
+    /**
+     * Creates range with mapped values as Yarra
+     * @param Options for range map
+     * @returns
+     */
     static rangeMap({
         start = 0,
         end,
@@ -199,6 +221,13 @@ export class Yarra<Type> extends Array<Type> {
         return arr;
     }
 
+    /**
+     * Creates linearly spaced values as Yarra
+     * @param start
+     * @param end
+     * @param n
+     * @returns Linearly spaced Yarra
+     */
     static linSpace(start = 0, end = 1, n = 2) {
         if (!Number.isInteger(n)) throw Error("n not an integer");
         if (n <= 1) throw Error("n must be greater than 1");
@@ -210,6 +239,14 @@ export class Yarra<Type> extends Array<Type> {
         });
     }
 
+    /**
+     * Creates linearly spaced mapped values as Yarra
+     * @param start
+     * @param end
+     * @param n
+     * @param f
+     * @returns
+     */
     static linSpaceMap(start = 0, end = 1, n = 2, f: (x: number) => any) {
         if (!Number.isInteger(n)) throw Error("n not an integer");
         if (n <= 0) throw Error("n must be positive");
@@ -222,6 +259,10 @@ export class Yarra<Type> extends Array<Type> {
         });
     }
 
+    /**
+     * Takes values and creates a Yarra
+     * @param args Iterable or Items rested
+     */
     constructor(args: Iterable<Type>);
     constructor(...args: Type[]);
     constructor(...args: Type[]) {
@@ -293,18 +334,30 @@ export class Yarra<Type> extends Array<Type> {
         });
     }
 
+    /**
+     * Gets first value in Yarra
+     */
     get head() {
         return this[0];
     }
 
+    /**
+     * Gets last value in Yarra
+     */
     get last() {
         return this[this.length - 1];
     }
 
+    /**
+     * Gets Yarra as entries with values then number tuple
+     */
     get full(): Yarra<[Type, number]> {
         return new Yarra([...this.entries()].map(([i, x]) => [x, i])); // matches typical value then index in map, filter, and reduce
     }
 
+    /**
+     * Gets amount of filled values
+     */
     get size() {
         // ignores empty/undefined values (still unable to just detect only empty / I don't think it is possible without watching writes)
         let size = 0;
@@ -312,6 +365,9 @@ export class Yarra<Type> extends Array<Type> {
         return size;
     }
 
+    /**
+     * Gets dimensions of Yarra (based on first index)
+     */
     get dimensions(): Yarra<number> {
         // this does not test for consistency in dimensions and only by measure of first index
         // doesn't return Yarra since data it simple
@@ -323,6 +379,11 @@ export class Yarra<Type> extends Array<Type> {
         } else return new Yarra([this.length]);
     }
 
+    /**
+     * Get in string format following English grammar
+     * @param oxfordComma To include oxford comma or not
+     * @returns
+     */
     written(oxfordComma = true) {
         if (this.length === 0) return "";
         if (this.length === 1) return this[0];
@@ -335,40 +396,84 @@ export class Yarra<Type> extends Array<Type> {
         );
     }
 
+    /**
+     * Gets Yarra excluding last n elements
+     * @param n Amount to exclude
+     * @returns
+     */
     initial(n = 1) {
         return this.slice(0, -n);
     }
 
+    /**
+     * Get Yarra excluding first n elements
+     * @param n Amount to exclude
+     * @returns
+     */
     tail(n = 1) {
         return this.slice(n);
     }
 
+    /**
+     * Get back truthy values (removes undefined and other falsy values)
+     * @returns
+     */
     compact() {
         return this.filter(Boolean);
     }
 
+    /**
+     * Get content with unique values only
+     * @param loose Choose to use == instead of ===
+     * @returns
+     */
     unique(loose = false) {
         return loose
             ? this.filter((x, i, a) => i === a.findIndex((y) => x == y))
             : new Yarra(new Set(this));
     }
 
+    /**
+     * Get content with unique values only based on function comparison
+     * @param f Comparing function
+     * @returns
+     */
     uniqueWith(f: (x: Type, y: Type) => boolean) {
         return this.filter((x, i, a) => i === a.findIndex((y) => f(x, y)));
     }
 
+    /**
+     * Check if content is unique values
+     * @param loose Choose to use == instead of ===
+     * @returns
+     */
     isUnique(loose = false) {
         return this.length === this.unique(loose).length;
     }
 
+    /**
+     * Check if content is unique values based on function comparison
+     * @param f Comparing function
+     * @returns
+     */
     isUniqueWith(f: (x: Type, y: Type) => boolean) {
         return this.length === this.uniqueWith(f).length;
     }
 
+    /**
+     * Get count of occurrences of truth results from function
+     * @param f
+     * @returns
+     */
     count(f = Boolean) {
         return this.reduce((s, x) => s + (f(x) ? 1 : 0), 0);
     }
 
+    /**
+     * Get object of occurrence count with f mapping
+     * @param f Mapping function
+     * @returns
+     */
     occurrences(
         f: (x: Type, i: number, array: Type[]) => any = (a: Type) => a
     ) {
@@ -380,10 +485,19 @@ export class Yarra<Type> extends Array<Type> {
         return output;
     }
 
+    /**
+     * Get a single random value from content
+     * @returns
+     */
     sample() {
         return this[Math.floor(Math.random() * this.length)];
     }
 
+    /**
+     * Generate array in chunks of size n
+     * @param n Chunk size
+     * @returns
+     */
     chunk(n: number): any[] {
         return this.reduce(
             (p, x, i): any =>
@@ -394,15 +508,32 @@ export class Yarra<Type> extends Array<Type> {
         );
     }
 
+    /**
+     * Alias to flatten
+     * @param n flatten levels
+     * @returns
+     */
     uncover(n = 1) {
         return this.flat(n);
     }
 
+    /**
+     * Wraps content in Yarra n times
+     * @param n Wrapping count
+     * @returns
+     */
     cover(n = 1): Yarra<any> {
         if (n < 1) return this.clone();
         return (this.map((x) => new Yarra([x])) as Yarra<any>).cover(n - 1);
     }
 
+    /**
+     * Similar to map, but with two arrays
+     * @param arr
+     * @param f Mapping function
+     * @param singleDimension
+     * @returns
+     */
     elementWise(
         arr: Yarra<any>,
         f: (a: Type, b: any, i: any) => any,
@@ -435,15 +566,30 @@ export class Yarra<Type> extends Array<Type> {
         return output;
     }
 
+    /**
+     * elementWise with addition operation
+     * @param arr
+     * @returns
+     */
     add(arr: Yarra<any>) {
         return this.elementWise(arr, (a, b) => a + b);
     }
 
+    /**
+     * elementWise with multiplication operation
+     * @param arr
+     * @returns
+     */
     mult(arr: Yarra<any>) {
         // this is element wise multiplication
         return this.elementWise(arr, (a: any, b: any) => a * b);
     }
 
+    /**
+     * Matrix multiplication with another Yarra
+     * @param arr
+     * @returns
+     */
     matrixMult(arr: Yarra<Yarra<number>>) {
         if (
             this.dimensions.length > 2 ||
@@ -469,6 +615,10 @@ export class Yarra<Type> extends Array<Type> {
         return output;
     }
 
+    /**
+     * Transpose content of 2D Yarra
+     * @returns
+     */
     transpose(): Yarra<Yarra<Type>> {
         if (this.dimensions.length > 2)
             throw Error("Unable to transpose over 2D");
@@ -483,40 +633,79 @@ export class Yarra<Type> extends Array<Type> {
         return output;
     }
 
+    /**
+     * {@link transpose} with mutation
+     * @returns
+     */
     transposeMutate() {
         return this.mutate(this.transpose());
     }
 
+    /**
+     * Sum of all content
+     * @returns
+     */
     sum(): any {
         return this.reduce((s: any, x: any) => s + x);
     }
 
+    /**
+     * Product of all content
+     * @returns
+     */
     product(): any {
         return this.reduce((s: any, x: any) => s * x, 1);
     }
 
+    /**
+     * Get max value of content
+     * @returns
+     */
     max() {
         return Math.max(...(this as any));
     }
 
+    /**
+     * Get min value of content
+     * @returns
+     */
     min() {
         return Math.min(...(this as any));
     }
 
+    /**
+     * Get average value of content
+     * @returns
+     */
     average() {
         return this.sum() / this.length;
     }
 
+    /**
+     * Inverse of {@link some} function
+     * @param f
+     * @returns
+     */
     none(f: (value: Type, index: number, array: Type[]) => unknown) {
         return !this.some(f);
     }
 
+    /**
+     * Sets value of content to newValue
+     * @param newValue
+     * @returns
+     */
     mutate(newValue: any) {
         this.length = newValue.length;
         for (let [x, i] of newValue.full) this[i] = x;
         return newValue;
     }
 
+    /**
+     * Gets value at path of indices
+     * @param indices
+     * @returns
+     */
     get(...indices: number[]) {
         // alias to typical indexing with multidimensional indexing
         let output: any = this;
@@ -525,6 +714,11 @@ export class Yarra<Type> extends Array<Type> {
         return output;
     }
 
+    /**
+     * Sets value at path of indices with returned function
+     * Pass value with currying
+     * @param indices
+     */
     set(indices: number[]): (newValue: any) => any;
     set(...indices: number[]): (newValue: any) => any;
     set(...indices: any) {
