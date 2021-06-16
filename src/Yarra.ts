@@ -251,6 +251,7 @@ export class Yarra<Type> extends Array<Type> {
                     let num = +name;
                     if (Number.isInteger(num) && num < 0)
                         return target[target.length + num];
+                    return target[num];
                 }
 
                 let indices = Yarra.toIndices(name, this.dimensions);
@@ -404,7 +405,7 @@ export class Yarra<Type> extends Array<Type> {
 
     elementWise(
         arr: Yarra<any>,
-        f: (a: Type, b: any, i: number) => any,
+        f: (a: Type, b: any, i: any) => any,
         singleDimension = false
     ) {
         if (singleDimension) {
@@ -412,8 +413,7 @@ export class Yarra<Type> extends Array<Type> {
 
             let output = Yarra.allocate(this.length);
             for (let i in this) {
-                if (typeof i === "number")
-                    output[i] = f(this[i], arr[i], i as number);
+                output[i] = f(this[i], arr[i], i);
             }
             return output;
         }
@@ -424,7 +424,7 @@ export class Yarra<Type> extends Array<Type> {
         let output = Yarra.allocate(this.length);
         if (this.dimensions.length === 1) {
             for (let i in this) {
-                if (typeof i === "number") output[i] = f(this[i], arr[i], i);
+                output[i] = f(this[i], arr[i], i);
             }
             return output;
         }
@@ -476,9 +476,8 @@ export class Yarra<Type> extends Array<Type> {
 
         let output = Yarra.allocate(this.dimensions[1]);
         for (let j in this[0]) {
-            if (typeof j !== "number") continue;
-            output[j] = Yarra.allocate(this.dimensions[0]);
-            for (let i in this) output[j][i] = this[i][j];
+            output[+j] = Yarra.allocate(this.dimensions[0]);
+            for (let i in this) output[+j][i] = this[i][j];
         }
 
         return output;
@@ -715,6 +714,30 @@ export class Yarra<Type> extends Array<Type> {
             : this.filterFull((x: any) => x === v).map(([_, i]) => i);
     }
 
+    takeWhile(f: (x: Type, i: number) => boolean): Yarra<Type> {
+        for (let i = 0; i < this.length; i++)
+            if (!f(this[i], i)) return new Yarra(this.slice(0, i));
+        return this.clone();
+    }
+
+    takeWhileRight(f: (x: Type, i: number) => boolean): Yarra<Type> {
+        for (let i = this.length - 1; i >= 0; i--)
+            if (!f(this[i], i)) return new Yarra(this.slice(i));
+        return this.clone();
+    }
+
+    dropWhile(f: (x: Type, i: number) => boolean): Yarra<Type> {
+        for (let i = 0; i < this.length; i++)
+            if (!f(this[i], i)) return new Yarra(this.slice(i));
+        return this.clone();
+    }
+
+    dropWhileRight(f: (x: Type, i: number) => boolean): Yarra<Type> {
+        for (let i = this.length - 1; i >= 0; i--)
+            if (!f(this[i], i)) return new Yarra(this.slice(0, i));
+        return this.clone();
+    }
+
     flattenDeep() {
         return this.flat(Infinity);
     }
@@ -811,4 +834,9 @@ Object.defineProperty(Yarra.prototype, "toCycleGenerator", {
     enumerable: false,
 });
 
+/**
+ * Shortcut for calling Yarra constructor
+ * @param args Elements for new Yarra
+ * @returns
+ */
 export const Y = (...args: any[]) => new Yarra(...args); // shortcut for simplicity

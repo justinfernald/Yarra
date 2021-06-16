@@ -1,13 +1,16 @@
 {
     "name": "yarra.js",
-    "version": "1.0.0",
+    "version": "1.0.3",
     "description": "JavaScript arrays, but beefed.",
     "main": "lib/Yarra.js",
-    "types": "lib",
+    "types": "lib/Yarra.d.ts",
+    "files": [
+        "lib/**/*"
+    ],
     "scripts": {
+        "prepublish": "npm run build",
         "test": "echo \"Error: no test specified\" && exit 1",
-        "build": "tsc -p . && npm run minify",
-        "minify": "uglifyjs --compress --output build/Yarra.min.js -- lib/Yarra.js",
+        "build": "tsc -p .",
         "docs": "npx typedoc --theme minimal --out docs/ src/"
     },
     "repository": {

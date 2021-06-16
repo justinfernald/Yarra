@@ -48,7 +48,7 @@ export declare class Yarra<Type> extends Array<Type> {
     chunk(n: number): any[];
     uncover(n?: number): (this extends readonly (infer InnerArr)[] ? FlatArray<InnerArr, 0 | 1 | 2 | -1 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20> : this)[];
     cover(n?: number): Yarra<any>;
-    elementWise(arr: Yarra<any>, f: (a: Type, b: any, i: number) => any, singleDimension?: boolean): Yarra<any>;
+    elementWise(arr: Yarra<any>, f: (a: Type, b: any, i: any) => any, singleDimension?: boolean): Yarra<any>;
     add(arr: Yarra<any>): Yarra<any>;
     mult(arr: Yarra<any>): Yarra<any>;
     matrixMult(arr: Yarra<Yarra<number>>): Yarra<any>;
@@ -87,6 +87,10 @@ export declare class Yarra<Type> extends Array<Type> {
     findLastFull(f: (value: Type) => boolean): (number | Type)[];
     findAllIndex(f: (value: Type) => boolean): number[];
     allIndexOf(v: any, loose?: boolean): number[];
+    takeWhile(f: (x: Type, i: number) => boolean): Yarra<Type>;
+    takeWhileRight(f: (x: Type, i: number) => boolean): Yarra<Type>;
+    dropWhile(f: (x: Type, i: number) => boolean): Yarra<Type>;
+    dropWhileRight(f: (x: Type, i: number) => boolean): Yarra<Type>;
     flattenDeep(): (this extends readonly (infer InnerArr)[] ? FlatArray<InnerArr, 0 | 1 | 2 | -1 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20> : this)[];
     shuffle(): Yarra<Type>;
     equals(rhs: any[], loose?: boolean): boolean;
@@ -102,5 +106,10 @@ export declare class Yarra<Type> extends Array<Type> {
     toGenerator: () => Generator<any, void, unknown>;
     toCycleGenerator: () => Generator<any, never, unknown>;
 }
+/**
+ * Shortcut for calling Yarra constructor
+ * @param args Elements for new Yarra
+ * @returns
+ */
 export declare const Y: (...args: any[]) => Yarra<any>;
 //# sourceMappingURL=Yarra.d.ts.map
