@@ -1,6 +1,6 @@
 {
     "name": "yarra.js",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "description": "JavaScript arrays, but beefed.",
     "main": "lib/Yarra.js",
     "types": "lib/Yarra.d.ts",

@@ -2718,138 +2718,20 @@ img {
 			<a href="#yarra" id="yarra" style="color: inherit; text-decoration: none;">
 				<h1>Yarra</h1>
 			</a>
-			<p>JavaScript Arrays but beefed</p>
+			<p>JavaScript Arrays but beefed.</p>
 			<a href="#overview" id="overview" style="color: inherit; text-decoration: none;">
 				<h2>Overview</h2>
 			</a>
 			<p>The goal of Yarra is to add common array operations to arrays objects that do not already exists. Yarra is not about speed, but to not completely ignore speed.</p>
 			<p>It is possible to add onto the prototype of Array in JavaScript, but that is very bad practice for many reasons, so the recommendation is to stay very clear of that. So Yarra extends off of Array.</p>
 			<p>The syntax of using Yarra attempts to keep as much similarity as possible. Yarra pulls inspiration from the array methods from Lodash.</p>
+			<p><a href="https://justinfernald.github.io/Yarra/">Link to Documentation</a></p>
 			<hr>
-			<a href="#feature--function-list" id="feature--function-list" style="color: inherit; text-decoration: none;">
-				<h2>Feature / Function List</h2>
+			<a href="#install" id="install" style="color: inherit; text-decoration: none;">
+				<h2>Install</h2>
 			</a>
-			<a href="#to-add" id="to-add" style="color: inherit; text-decoration: none;">
-				<h3>To add</h3>
-			</a>
-			<ul>
-				<li>  All native array functions</li>
-				<li>Static functions<ul>
-						<li>  <code>allocate(n)</code>: Create new Yarra with n spaces preallocated</li>
-						<li>  <code>entries(x)</code>: Get entries of object as Yarra</li>
-						<li>  <code>range({ start = 0, end, step = 1, inclusive = false })</code>: range values as Yarra</li>
-						<li>  <code>rangeMap({ start = 0, end, step = 1, inclusive = false, f = (x) =&gt; x })</code>: range with values mapped</li>
-						<li>  <code>linSpace(start = 0, end = 1, n = 2)</code>: linearly space values as Yarra</li>
-						<li>  <code>linSpaceMap(start = 0, end = 1, n = 2, f)</code>: linSpace with values mapped</li>
-					</ul>
-				</li>
-				<li>Getters<ul>
-						<li>  Negative indexing</li>
-						<li>  <code>head</code>: Get first element</li>
-						<li>  <code>tail</code>: Get last element</li>
-						<li>  <code>full</code>: Get entries</li>
-						<li>  <code>size</code>: Get filled values count</li>
-						<li>  <code>dimensions</code>: Get Yarra of dimensions</li>
-						<li>  Custom indexing</li>
-					</ul>
-				</li>
-				<li>Setters<ul>
-						<li>  Negative indexing</li>
-						<li>  Custom indexing</li>
-					</ul>
-				</li>
-				<li>Functions<ul>
-						<li>  <code>written(oxfordComma = true)</code>: Get in string format following English grammar</li>
-						<li>  <code>unique((loose = false))</code>: Get content with unique values only</li>
-						<li>  <code>uniqueWith(f)</code>: Get content with unique values only with custom comparator</li>
-						<li>  <code>isUnique((loose = false))</code>: Check if content is unique values</li>
-						<li>  <code>isUniqueWith(f)</code>: Check if content is unique values with custom comparator</li>
-						<li>  <code>count((f = Boolean))</code>: Get count of occurrences of truth results from function</li>
-						<li>  <code>occurrences(f = (a) =&gt; a)</code>: Returns object of occurrence count with f mapping</li>
-						<li>  <code>sample()</code>: Get a single random value from content</li>
-						<li>  <code>chunk(n)</code>: Generate array in chunks of size n</li>
-						<li>  <code>uncover((n = 1))</code>: Alias to flatten</li>
-						<li>  <code>cover((n = 1))</code>: Wraps content in Yarra n times</li>
-						<li>  <code>elementWise(arr, f, singleDimension = false)</code>: Similar to map, but with two arrays</li>
-						<li>  <code>add(arr)</code>: elementWise with addition operation</li>
-						<li>  <code>mult(arr)</code>: elementWise with multiplication operation</li>
-						<li>  <code>matrixMult(arr)</code>: matrix multiplication with another Yarra</li>
-						<li>  <code>transpose()</code>: transpose content</li>
-						<li>  <code>transposeMutate()</code>: transpose with mutation</li>
-						<li>  <code>sum()</code>: sum of all content</li>
-						<li>  <code>product()</code> product of all content</li>
-						<li>  <code>max()</code>: get max value of content</li>
-						<li>  <code>min()</code>: get min value of content</li>
-						<li>  <code>average()</code>: get average value of content</li>
-						<li>  <code>none(f)</code>: inverse of some</li>
-						<li>  <code>mutate(newValue)</code>: sets value of content to newValue</li>
-						<li>  <code>get(...indices)</code>: another method of indexing using function with comma separation</li>
-						<li>  <code>set(...indices)</code>: similar to get indexing with returning function to pass in value to set</li>
-						<li>  <code>at(...indices)</code>: retrieve array of values at indices</li>
-						<li>  <code>pullAt(...indices)</code>: at with removal of values at indices</li>
-						<li>  <code>mapMutate(f, thisArg)</code>: map with mutation</li>
-						<li>  <code>filterMutate(f, thisArg)</code>: filter with mutation</li>
-						<li>  <code>rejectMutate(f, thisArg)</code>: reject with mutation</li>
-						<li>  <code>reject(f, thisArg)</code>: inverse of filter</li>
-						<li>  <code>rejectFull(f, thisArg)</code>: reject with entries</li>
-						<li>  <code>filterFull(f, thisArg)</code>: filter with entries</li>
-						<li>  <code>split(f)</code>: similar to filter, but with return of accepted and rejected values</li>
-						<li>  <code>splitFull(f)</code>: split with entries</li>
-						<li>  <code>splitAt(...indices)</code>: split content at indices into multiple arrays</li>
-						<li>  <code>findFull(f)</code>: find with value and index</li>
-						<li>  <code>findLast(f)</code>: find with from right to left search</li>
-						<li>  <code>findLastIndex(f)</code>: findLast with index</li>
-						<li>  <code>findLastFull(f)</code>: findLast with value and index</li>
-						<li>  <code>findAllIndex(f)</code>: filter with indices instead of values</li>
-						<li>  <code>allIndexOf(v, (loose = false))</code>: indexOf with array return of all occurrences</li>
-						<li>  <code>flattenDeep()</code>: flattens array completely</li>
-						<li>  <code>shuffle()</code>: shuffles array <em>everyday I&#39;m shufflin&#39;</em></li>
-						<li>  <code>equals(rhs, (loose = false))</code>: shallow checks element wise if content equals rhs array</li>
-						<li>  <code>equalsWith(rhs, f)</code>: equals with custom comparator</li>
-						<li>  <code>clone()</code>: clones Yarra</li>
-						<li>  <code>concat(...args)</code>: same as regular concat with speed up</li>
-						<li>  <code>concatMutate(...args)</code>: concat with mutation</li>
-						<li>  <code>insertItem(x, (i = 0))</code>: insert item at index and returns new Yarra</li>
-						<li>  <code>insertList(list, (i = 0))</code>: inserts multiple items at index and returns new Yarra</li>
-						<li>  <code>insertItemMutate(x, (i = 0))</code>: insertItem with mutation</li>
-						<li>  <code>insertListMutate(list, (i = 0))</code>: insertList with mutation</li>
-						<li>  <code>toArray()</code>: converts to native Array</li>
-					</ul>
-				</li>
-			</ul>
-			<a href="#planned" id="planned" style="color: inherit; text-decoration: none;">
-				<h3>Planned</h3>
-			</a>
-			<ul>
-				<li>Static functions<ul>
-						<li>  <code>#toIndices(input)</code>: convert string to future indexing format</li>
-					</ul>
-				</li>
-				<li>Getters<ul>
-						<li>  Take indexing format and return corresponding values</li>
-						<li>Change to <code>dimensions</code> such that it doesn&#39;t just check first element for dimensions (possible options of max, min, first, consistent)<ul>
-								<li>  max will return max length for each dimension</li>
-								<li>  min will return min length for each dimension</li>
-								<li>  first(current) will return min length for each dimension</li>
-								<li>  consistent will return dimension and enforce they are all the same size and if not throw an error</li>
-								<li>  this will require making this a function instead of getter</li>
-							</ul>
-						</li>
-					</ul>
-				</li>
-				<li>Setters<ul>
-						<li>  Take indexing format allow setting values to each (replace all with scalar value and replace each with array value)</li>
-					</ul>
-				</li>
-				<li>Functions<ul>
-						<li>  <code>takeWhile(f)</code>: returns Yarra of items up to when f returns false (starting from left to right)</li>
-						<li>  <code>takeWhileRight(f)</code>: takeWhile from right to left</li>
-						<li>  <code>dropWhile(f)</code>: returns Yarra of rest of content once f returns false (starting from left to right)</li>
-						<li>  <code>dropWhileRight(f)</code>: dropWhile from right to left</li>
-						<li>  Enforce dimension consistency to elementWise functions</li>
-					</ul>
-				</li>
-			</ul>
+			<pre><code class="language-bash"><span style="color: #000000">npm install yarra.js</span>
+</code></pre>
 			<hr>
 			<a href="#examples" id="examples" style="color: inherit; text-decoration: none;">
 				<h2>Examples</h2>
@@ -2865,7 +2747,7 @@ img {
 <span style="color: #000000">        [</span><span style="color: #098658">7</span><span style="color: #000000">, </span><span style="color: #098658">8</span><span style="color: #000000">, </span><span style="color: #098658">9</span><span style="color: #000000">],</span>
 <span style="color: #000000">        [</span><span style="color: #098658">10</span><span style="color: #000000">, </span><span style="color: #098658">11</span><span style="color: #000000">, </span><span style="color: #098658">12</span><span style="color: #000000">],</span>
 <span style="color: #000000">    ],</span>
-<span style="color: #000000">]).</span><span style="color: #795E26">dimensions</span><span style="color: #000000">(); </span><span style="color: #008000">// -&gt; [2,2,3]</span>
+<span style="color: #000000">]).</span><span style="color: #001080">dimensions</span><span style="color: #000000">; </span><span style="color: #008000">// -&gt; [2,2,3]</span>
 <span style="color: #795E26">Y</span><span style="color: #000000">(</span><span style="color: #098658">1</span><span style="color: #000000">, </span><span style="color: #098658">2</span><span style="color: #000000">, </span><span style="color: #098658">3</span><span style="color: #000000">, </span><span style="color: #098658">4</span><span style="color: #000000">).</span><span style="color: #795E26">tail</span><span style="color: #000000">(); </span><span style="color: #008000">// -&gt; Y[2,3,4]</span>
 <span style="color: #795E26">Y</span><span style="color: #000000">(</span><span style="color: #098658">34</span><span style="color: #000000">, </span><span style="color: #098658">2</span><span style="color: #000000">, </span><span style="color: #098658">5</span><span style="color: #000000">, </span><span style="color: #098658">62</span><span style="color: #000000">, </span><span style="color: #098658">1</span><span style="color: #000000">).</span><span style="color: #001080">length</span><span style="color: #000000">; </span><span style="color: #008000">// -&gt; 5</span>
 <span style="color: #795E26">Y</span><span style="color: #000000">(</span><span style="color: #098658">1</span><span style="color: #000000">, </span><span style="color: #098658">2</span><span style="color: #000000">).</span><span style="color: #795E26">equals</span><span style="color: #000000">(</span><span style="color: #795E26">Y</span><span style="color: #000000">(</span><span style="color: #098658">1</span><span style="color: #000000">, </span><span style="color: #098658">2</span><span style="color: #000000">)); </span><span style="color: #008000">// -&gt; true</span>
@@ -2877,14 +2759,12 @@ img {
 <span style="color: #AF00DB">for</span><span style="color: #000000"> (</span><span style="color: #0000FF">let</span><span style="color: #000000"> </span><span style="color: #001080">x</span><span style="color: #000000"> </span><span style="color: #0000FF">of</span><span style="color: #000000"> </span><span style="color: #795E26">Y</span><span style="color: #000000">(</span><span style="color: #098658">1</span><span style="color: #000000">, </span><span style="color: #098658">2</span><span style="color: #000000">, </span><span style="color: #098658">3</span><span style="color: #000000">)); </span><span style="color: #008000">// works with iterator</span>
 </code></pre>
 			<hr>
-			<a href="#extra-objectives" id="extra-objectives" style="color: inherit; text-decoration: none;">
-				<h2>Extra Objectives</h2>
+			<a href="#future-objectives" id="future-objectives" style="color: inherit; text-decoration: none;">
+				<h2>Future Objectives</h2>
 			</a>
 			<ul>
 				<li>  Better performance</li>
 				<li>  Adding Tests</li>
-				<li>  Conversion to TypeScript</li>
-				<li>  Creation of Node module</li>
 			</ul>
 		</div>
 		<div style="position:relative;"><a name="typedoc-main-index" class="tsd-anchor"></a></div>
@@ -2919,7 +2799,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/justinfernald/Yarra/blob/00a20fd/src/Yarra.ts#L1047">src/Yarra.ts:1047</a></li>
+								<li>Defined in <a href="https://github.com/justinfernald/Yarra/blob/f4a6d46/src/Yarra.ts#L1047">src/Yarra.ts:1047</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
