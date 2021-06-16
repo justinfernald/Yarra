@@ -14,6 +14,14 @@ The syntax of using Yarra attempts to keep as much similarity as possible. Yarra
 
 ---
 
+## Install
+
+```bash
+npm install yarra.js
+```
+
+---
+
 ## Examples
 
 ```javascript
