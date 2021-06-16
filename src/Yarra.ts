@@ -608,6 +608,17 @@ export class Yarra<Type> extends Array<Type> {
         return accepted;
     }
 
+    deepMap(f: (x: Type, indices: number[]) => any): Yarra<any> {
+        let deepMapRunner = (arr: Yarra<any>, f, indices = []) => {
+            arr = new Yarra(arr);
+            if (arr[0] instanceof Array)
+                return arr.map((x, i) => deepMapRunner(x, f, [...indices, i]));
+            else return arr.map((x, i) => f(x, [...indices, i]));
+        };
+
+        return deepMapRunner(this, f);
+    }
+
     mapMutate(
         f: (value: Type, index: number, array: Type[]) => any,
         thisArg?: any

@@ -71,6 +71,7 @@ export declare class Yarra<Type> extends Array<Type> {
     at(...indices: number[]): Yarra<Type>;
     pullAt(indices: number[]): Yarra<Type>;
     pullAt(...indices: number[]): Yarra<Type>;
+    deepMap(f: (x: Type, indices: number[]) => any): Yarra<any>;
     mapMutate(f: (value: Type, index: number, array: Type[]) => any, thisArg?: any): any;
     filterMutate(f: (value: Type, index: number, array: Type[]) => boolean, thisArg?: any): any;
     rejectMutate(f: (value: Type, index: number, array: Type[]) => boolean, thisArg?: any): any;
