@@ -8,7 +8,7 @@
         "test": "echo \"Error: no test specified\" && exit 1",
         "build": "tsc -p . && npm run minify",
         "minify": "uglifyjs --compress --output build/Yarra.min.js -- lib/Yarra.js",
-        "docs": "npx typedoc --theme minimal  --out docs/ src/"
+        "docs": "npx typedoc --out docs/ src/"
     },
     "repository": {
         "type": "git",
@@ -28,6 +28,7 @@
     "homepage": "https://github.com/justinfernald/Yarra#readme",
     "devDependencies": {
         "typedoc": "^0.20.36",
+        "typedoc-plugin-markdown": "^3.9.0",
         "uglify-js": "^3.13.9"
     }
 }
